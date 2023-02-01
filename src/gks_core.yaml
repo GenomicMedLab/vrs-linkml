@@ -1,6 +1,6 @@
-id: https://w3id.org/linkml/examples/personinfo  # TODO
+id: https://github.com/ga4gh/vrs/blob/metaschema-update
 name: GA4GH-GKS-Core-Definitions
-description: kjsdfl;jksdfkljdf
+description: GKS core schema objects
 prefixes:
   linkml: https://w3id.org/linkml/
 imports:
@@ -171,7 +171,7 @@ classes:
 types:
   CURIE:
     uri: gks:CURIE
-    base: str
+    base: string
     description: >-
       A `W3C Compact URI <https://www.w3.org/TR/curie/>`_ formatted string.
       A CURIE string has the structure ``prefix``:``reference``, as defined by

@@ -1,0 +1,455 @@
+id: https://github.com/ga4gh/vrs/
+name: GA4GH-VRS
+description: Variant Representation Specification
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+  - gks_core
+default_range: string
+
+classes:
+  Variation:
+    abstract: True
+    is_a: ValueEntity
+    description: >-
+      A representation of the state of one or more biomolecules.
+    # discriminator: propertyName
+  MolecularVariation:
+    abstract: True
+    is_a: Variation
+    description: >-
+      A :ref:`variation` on a contiguous molecule.
+    # discriminator: propertyName
+  UtilityVariation:
+    abstract: True
+    is_a: Variation
+    description: >-
+      A collection of :ref:`Variation` subclasses that cannot be
+      constrained to a specific class of biological variation, but
+      are necessary for some applications of VRS.
+    # discriminator: propertyName
+  SystemicVariation:
+    is_a: Variation
+    abstract: True
+    description: >-
+      A Variation of multiple molecules in the context of a system, e.g.
+      a genome, sample, or homologous chromosomes.
+    # discriminator: propertyName
+  Allele:
+    is_a: MolecularVariation
+    # ga4gh_prefix: VA
+    description: >-
+      The state of a molecule at a :ref:`Location`.
+    attributes:
+      type:
+        pattern: "Allele"
+      location:
+        description: "An expression of the sequence state."
+        range: CURIE  # or Location
+        required: true
+      state:
+        range: SequenceExpression
+        required: true
+        description: >-
+          An expression of the sequence state
+  Haplotype:
+    # ga4gh_prefix: HT
+    is_a: MolecularVariation
+    description: >-
+      A set of non-overlapping :ref:`Allele` members that co-occur on the same molecule.
+    attributes:
+      type:
+        pattern: "Haplotype"
+      members:
+        description: >-
+          List of Alleles, or references to Alleles, that comprise this Haplotype.
+        multivalued: true
+        required: true
+        # minItems: 2
+        # uniqueItems: true
+        range: CURIE  # should also be Allele
+  Text:
+      #ga4gh_prefix: VT
+    is_a: UtilityVariation
+    description: >-
+      A free-text definition of variation.
+    attributes:
+      type:
+        pattern: "Text"
+      definition:
+        required: true
+        description: >-
+          A textual representation of variation not representable by
+          other subclasses of Variation.
+  VariationSet:
+    # ga4gh_prefix: VS
+    is_a: UtilityVariation
+    description: >-
+      An unconstrained set of Variation members.
+    attributes:
+      type:
+        pattern: "VariationSet"
+      members:
+        description: >-
+          List of Variation objects or identifiers. Attribute is
+          required, but MAY be empty.
+        required: true
+        multivalued: true
+        # minItems: 2
+        # uniqueItems: true
+        range: CURIE  # should also be Variation
+
+  CopyNumber:
+    is_a: SystemicVariation
+    description: >-
+      A measure of the copies of a :ref:`Location` within a system (e.g. a genome)
+    attributes:
+      location:
+        range: CURIE  # also Location
+        required: true
+        description: >-
+          The location within the system.
+  AbsoluteCopyNumber:
+    # ga4gh_prefix: ACN
+    is_a: CopyNumber
+    description: >-
+      The absolute count of discrete copies of a :ref:`MolecularVariation`,
+      :ref:`Feature`, :ref:`SequenceExpression`, or a :ref:`CURIE` reference
+      within a system (e.g. genome, cell, etc.).
+    attributes:
+      type:
+        pattern: "AbsoluteCopyNumber"
+      copies:
+        required: true
+        range: Number  # also IndefiniteRange and DefiniteRange
+        description: >-
+          The integral number of copies of the subject in a system.
+  RelativeCopyNumber:
+    # ga4gh_prefix: RCN
+    is_a: CopyNumber
+    # maturity: draft
+    description: >-
+      The relative copies of a :ref:`MolecularVariation`,
+      :ref:`Feature`, :ref:`SequenceExpression`, or a :ref:`CURIE` reference
+      against an unspecified baseline in a system (e.g. genome, cell, etc.).
+    attributes:
+      type:
+        pattern: "RelativeCopyNumber"
+      relative_copy_class:
+        # # TODO figure out enums
+        # enum: [ "EFO:0030070", "EFO:0030072", "EFO:0030071", "EFO:0030067", "EFO:0030069", "EFO:0030068" ]
+        required: true
+        description: >-
+          MUST be one of "EFO:0030070", "EFO:0030072", "EFO:0030071", "EFO:0030067", "EFO:0030069", or "EFO:0030068".
+  Genotype:
+    # ga4gh_prefix: GT
+    is_a: SystemicVariation
+    description: >-
+      A quantified set of _in-trans_ :ref:`MolecularVariation` at a genomic locus.
+    attributes:
+      type:
+        pattern: "Genotype"
+      members:
+        required: true
+        multivalued: true
+        # ordered: false
+        # uniqueItems: true
+        # minItems: 1
+        range: GenotypeMember
+        description: >-
+          Each GenotypeMember in `members` describes a :ref:`MolecularVariation`
+          and the count of that variation at the locus.
+      count:
+        range: Number  # also IndefiniteRange and DefiniteRange
+        required: true
+        description: >-
+          The total number of copies of all :ref:`MolecularVariation` at this locus,
+          MUST be greater than or equal to the sum of :ref:`GenotypeMember` copy counts.
+          If greater than the total counts, this implies additional
+          :ref:`MolecularVariation` that are expected to exist but are not explicitly
+          indicated.
+  Location:
+    is_a: ValueEntity
+    description: >-
+      A contiguous segment of a biological sequence.
+    abstract: True
+      #  discriminator:
+      # propertyName: type
+  ChromosomeLocation:
+    description: >-
+      A Location on a chromosome defined by a species and chromosome name.
+    is_a: Location
+    attributes:
+      type:
+        pattern: "ChromosomeLocation"
+      species_id:
+        required: true
+        range: CURIE
+        # default: "taxonomy:9606"
+        description: >-
+          :ref:`CURIE` representing a species from the
+          `NCBI species taxonomy <https://registry.identifiers.org/registry/taxonomy>`_.
+          Default: "taxonomy:9606" (human)
+      chr:
+        required: true
+        description: >-
+          The symbolic chromosome name. For humans, For humans,
+          chromosome names MUST be one of 1..22, X, Y (case-sensitive)
+      start:
+        required: true
+        range: HumanCytoband
+        description: >-
+          The start cytoband region. MUST specify a region nearer the
+          terminal end (telomere) of the chromosome p-arm than `end`.
+      end:
+        required: true
+        range: HumanCytoband
+        description: >-
+          The start cytoband region. MUST specify a region nearer the
+          terminal end (telomere) of the chromosome q-arm than `start`.
+  SequenceLocation:
+    # ga4gh_prefix: SL
+    is_a: Location
+    description: >-
+      A :ref:`Location` defined by an interval on a referenced :ref:`Sequence`.
+    attributes:
+      type:
+        pattern: "SequenceLocation"
+      sequence_id:
+        range: CURIE
+        required: true
+        description: >-
+          A VRS :ref:`Computed Identifier <computed-identifiers>`
+          for the reference :ref:`Sequence`.
+      start:
+        range: Number  # also IndefiniteRange or DefiniteRange
+        required: true
+        description: >-
+          The start coordinate or range of the SequenceLocation.
+          The minimum value of this coordinate or range is 0.
+          MUST represent a coordinate or range less than the value of `end`.
+      end:
+        range: Number  # also IndefiniteRange or DefiniteRange
+        required: true
+        description: >-
+          The end coordinate or range of the SequenceLocation.
+          The minimum value of this coordinate or range is 0.
+          MUST represent a coordinate or range greater than the value of `start`.
+  SequenceExpression:
+    description: >-
+      An expression describing a :ref:`Sequence`.
+    # oneOf:
+    #   - $ref: "#/definitions/LiteralSequenceExpression"
+    #   - $ref: "#/definitions/DerivedSequenceExpression"
+    #   - $ref: "#/definitions/RepeatedSequenceExpression"
+    #   - $ref: "#/definitions/ComposedSequenceExpression"
+    # discriminator:
+    #   propertyName: type
+    # attributes:
+    #   type:
+    #     type: string
+    #     description: >-
+    #       The SequenceExpression class type. MUST match child class type.
+    # heritable_required: [ "type" ]
+  LiteralSequenceExpression:
+    is_a: SequenceExpression
+    description: >-
+      An explicit expression of a Sequence.
+    attributes:
+      type:
+        required: true
+        pattern: "LiteralSequenceExpression"
+      sequence:
+        range: Sequence
+        required: true
+        description: the literal :ref:`Sequence` expressed
+  DerivedSequenceExpression:
+    is_a: SequenceExpression
+    description: >-
+      An approximate expression of a sequence that is derived from
+      a referenced sequence location. Use of this class
+      indicates that the derived sequence is *approximately equivalent*
+      to the reference indicated, and is typically used for describing
+      large regions in contexts where the use of an approximate sequence
+      is inconsequential.
+    attributes:
+      type:
+        pattern: "DerivedSequenceExpression"
+      location:
+        range: SequenceLocation
+        required: true
+        description: >-
+          The location from which the approximate sequence is derived
+      reverse_complement:
+        range: boolean
+        required: true
+        description: >-
+          A flag indicating if the expressed sequence is the reverse
+          complement of the sequence referred to by `location`
+  RepeatedSequenceExpression:
+    is_a: SequenceExpression
+    description: >-
+      An expression of a sequence comprised of a tandem repeating subsequence.
+    attributes:
+      type:
+        pattern: "RepeatedSequenceExpression"
+      seq_expr:
+        required: true
+        range: LiteralSequenceExpression  # or DerivedSequenceExpression
+        description: >-
+          An expression of the repeating subsequence
+      count:
+        range: Number  # or IndefiniteRange or DefiniteRange
+        required: true
+        description: >-
+          The count of repeated units, as an integer or inclusive range
+    # allOf:
+    #   - if:
+    #       properties:
+    #         count:
+    #           $ref: "#/definitions/Number"
+    #     then:
+    #       properties:
+    #         count:
+    #           properties:
+    #             value:
+    #               minimum: 0
+    #   - if:
+    #       properties:
+    #         count:
+    #           $ref: "#/definitions/IndefiniteRange"
+    #     then:
+    #       properties:
+    #         count:
+    #           properties:
+    #             value:
+    #               minimum: 0
+    #   - if:
+    #       properties:
+    #         count:
+    #           $ref: "#/definitions/DefiniteRange"
+    #     then:
+    #       properties:
+    #         count:
+    #           properties:
+    #             min:
+    #               minimum: 0
+    #             max:
+    #               minimum: 0
+  ComposedSequenceExpression:
+    description: >-
+      An expression of a sequence composed from multiple other
+      :ref:`Sequence Expressions<SequenceExpression>`
+      objects. MUST have at least one component that is not a
+      ref:`LiteralSequenceExpression`. CANNOT be composed from
+      nested composed sequence expressions.
+    # additionalProperties: false
+    attributes:
+      type:
+        pattern: "ComposedSequenceExpression"
+      components:
+        multivalued: true
+        # ordered: true
+        # uniqueItems: true
+        # minItems: 2
+        range: LiteralSequenceExpression  # or RepeatedSequenceExpression or DerivedSequenceExpression
+        required: true
+        description: >-
+          An ordered list of :ref:`SequenceExpression` components
+          comprising the expression. MUST NOT have two adjacent
+          :ref:`LiteralSequenceExpression` objects.
+  GenotypeMember:
+    description: >-
+      A class for expressing the count of a specific :ref:`MolecularVariation` present
+      _in-trans_ at a genomic locus represented by a :ref:`Genotype`.
+    attributes:
+      type:
+        pattern: "GenotypeMember"
+      count:
+        range: Number  # or IndefiniteRange or DefiniteRange
+        required: true
+        description: >-
+          The number of copies of the `variation` at a :ref:`Genotype` locus.
+      variation:
+        range: Allele   # or Haplotype
+        required: true
+        description: >-
+          A :ref:`MolecularVariation` at a :ref:`Genotype` locus.
+
+  Number:
+    description: >-
+      A simple integer value as a VRS class.
+    attributes:
+      type:
+        required: true
+        pattern: "Number"
+      value:
+        required: true
+        range: integer
+        description: The value represented by Number
+
+  DefiniteRange:
+    description: >-
+      A bounded, inclusive range of numbers.
+    attributes:
+      type:
+        required: true
+        pattern: "DefiniteRange"
+      min:
+        range: Number
+        required: true
+        description: The minimum value; inclusive
+      max:
+        range: Number
+        required: true
+        description: The maximum value; inclusive
+
+  IndefiniteRange:
+    description: >-
+      A half-bounded range of numbers represented as a number bound and
+      associated comparator. The bound operator is interpreted as follows:
+      '>=' are all numbers greater than and including `value`, '<=' are all
+      numbers less than and including `value`.
+    attributes:
+      type:
+        pattern: "IndefiniteRange"
+        required: true
+      value:
+        range: Number
+        required: true
+        description: The bounded value; inclusive
+      comparator:
+        range: string
+        # enum: [ "<=", ">=" ]
+        required: true
+        description: >-
+          MUST be one of "<=" or ">=", indicating which direction the range
+          is indefinite
+
+types:
+  HumanCytoband:
+    description: >-
+      A character string representing cytobands derived from the
+      *International System for Human Cytogenomic Nomenclature* (ISCN)
+      `guidelines <http://doi.org/10.1159/isbn.978-3-318-06861-0>`_.
+    base: string
+    pattern: '^cen|[pq](ter|([1-9][0-9]*(\.[1-9][0-9]*)?))$'
+    # example: "q22.3"
+  Residue:
+    description: >-
+      A character representing a specific residue (i.e., molecular species)
+      or groupings of these ("ambiguity codes"), using `one-letter IUPAC
+      abbreviations <https://en.wikipedia.org/wiki/International_Union_of_Pure_and_Applied_Chemistry#Amino_acid_and_nucleotide_base_codes>`_
+      for nucleic acids and amino acids.
+    base: string
+    pattern: '[A-Z*\-]'
+
+  Sequence:
+    description: >-
+      A character string of :ref:`Residues <Residue>` that represents a biological
+      sequence using the conventional sequence order (5’-to-3’ for
+      nucleic acid sequences, and amino-to-carboxyl for amino acid
+      sequences). IUPAC ambiguity codes are permitted in Sequences.
+    base: string
+    pattern: '^[A-Z*\-]*$'
