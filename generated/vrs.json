@@ -1,0 +1,732 @@
+{
+  "$defs": {
+    "AbsoluteCopyNumber": {
+      "additionalProperties": false,
+      "description": "The absolute count of discrete copies of a :ref:`MolecularVariation`, :ref:`Feature`, :ref:`SequenceExpression`, or a :ref:`CURIE` reference within a system (e.g. genome, cell, etc.).",
+      "properties": {
+        "copies": {
+          "$ref": "#/$defs/Number",
+          "description": "The integral number of copies of the subject in a system."
+        },
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "location": {
+          "description": "The location within the system.",
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["copies", "location"],
+      "title": "AbsoluteCopyNumber",
+      "type": "object"
+    },
+    "Allele": {
+      "additionalProperties": false,
+      "description": "The state of a molecule at a :ref:`Location`.",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "location": {
+          "description": "An expression of the sequence state.",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/SequenceExpression",
+          "description": "An expression of the sequence state"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["location", "state"],
+      "title": "Allele",
+      "type": "object"
+    },
+    "ChromosomeLocation": {
+      "additionalProperties": false,
+      "description": "A Location on a chromosome defined by a species and chromosome name.",
+      "properties": {
+        "chr": {
+          "description": "The symbolic chromosome name. For humans, For humans, chromosome names MUST be one of 1..22, X, Y (case-sensitive)",
+          "type": "string"
+        },
+        "end": {
+          "description": "The start cytoband region. MUST specify a region nearer the terminal end (telomere) of the chromosome q-arm than `start`.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "species_id": {
+          "description": ":ref:`CURIE` representing a species from the `NCBI species taxonomy <https://registry.identifiers.org/registry/taxonomy>`_. Default: \"taxonomy:9606\" (human)",
+          "type": "string"
+        },
+        "start": {
+          "description": "The start cytoband region. MUST specify a region nearer the terminal end (telomere) of the chromosome p-arm than `end`.",
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["species_id", "chr", "start", "end"],
+      "title": "ChromosomeLocation",
+      "type": "object"
+    },
+    "Coding": {
+      "additionalProperties": false,
+      "description": "A `coding` is an extensible entity for labeling or otherwise annotating globally namespaced identifiers known as \"codes\".",
+      "properties": {
+        "extensions": {
+          "items": {
+            "$ref": "#/$defs/Extension"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "The `coding.id` field is used to capture the code as a CURIE.",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "record_metadata": {
+          "$ref": "#/$defs/RecordMetadata"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "title": "Coding",
+      "type": "object"
+    },
+    "CombinationTherapeuticCollection": {
+      "additionalProperties": false,
+      "description": "A collection of therapeutics that are taken during a course of treatment.",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "members": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["members"],
+      "title": "CombinationTherapeuticCollection",
+      "type": "object"
+    },
+    "ComposedSequenceExpression": {
+      "additionalProperties": false,
+      "description": "An expression of a sequence composed from multiple other :ref:`Sequence Expressions<SequenceExpression>` objects. MUST have at least one component that is not a ref:`LiteralSequenceExpression`. CANNOT be composed from nested composed sequence expressions.",
+      "properties": {
+        "components": {
+          "description": "An ordered list of :ref:`SequenceExpression` components comprising the expression. MUST NOT have two adjacent :ref:`LiteralSequenceExpression` objects.",
+          "items": {
+            "$ref": "#/$defs/LiteralSequenceExpression"
+          },
+          "type": "array"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["components"],
+      "title": "ComposedSequenceExpression",
+      "type": "object"
+    },
+    "Condition": {
+      "additionalProperties": false,
+      "description": "A set of phenotype and/or disease concepts that constitute a condition.",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "members": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "description": "The schema class that is instantiated by the data object. Must be the name of a class from the VA schema.",
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["members", "type"],
+      "title": "Condition",
+      "type": "object"
+    },
+    "CopyNumber": {
+      "additionalProperties": false,
+      "description": "A measure of the copies of a :ref:`Location` within a system (e.g. a genome)",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "location": {
+          "description": "The location within the system.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The schema class that is instantiated by the data object. Must be the name of a class from the VA schema.",
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["location", "type"],
+      "title": "CopyNumber",
+      "type": "object"
+    },
+    "DefiniteRange": {
+      "additionalProperties": false,
+      "description": "A bounded, inclusive range of numbers.",
+      "properties": {
+        "max": {
+          "$ref": "#/$defs/Number",
+          "description": "The maximum value; inclusive"
+        },
+        "min": {
+          "$ref": "#/$defs/Number",
+          "description": "The minimum value; inclusive"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["type", "min", "max"],
+      "title": "DefiniteRange",
+      "type": "object"
+    },
+    "DerivedSequenceExpression": {
+      "additionalProperties": false,
+      "description": "An approximate expression of a sequence that is derived from a referenced sequence location. Use of this class indicates that the derived sequence is *approximately equivalent* to the reference indicated, and is typically used for describing large regions in contexts where the use of an approximate sequence is inconsequential.",
+      "properties": {
+        "location": {
+          "description": "The location from which the approximate sequence is derived",
+          "type": "string"
+        },
+        "reverse_complement": {
+          "description": "A flag indicating if the expressed sequence is the reverse complement of the sequence referred to by `location`",
+          "type": "boolean"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["location", "reverse_complement"],
+      "title": "DerivedSequenceExpression",
+      "type": "object"
+    },
+    "Disease": {
+      "additionalProperties": false,
+      "description": "A reference to a Disease as defined by an authority. For human diseases, the use of `MONDO <https://registry.identifiers.org/registry/mondo>`_ as the disease authority is RECOMMENDED.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "title": "Disease",
+      "type": "object"
+    },
+    "DomainEntity": {
+      "additionalProperties": false,
+      "description": "An abstract :ref:`ValueEntity` class extended to capture specific domain entities by reference to an external identifier.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "description": "The schema class that is instantiated by the data object. Must be the name of a class from the VA schema.",
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["id", "type"],
+      "title": "DomainEntity",
+      "type": "object"
+    },
+    "ExtensibleEntity": {
+      "additionalProperties": false,
+      "description": "ExtensibleEntity is the root class for classes that instantiate Extensible Objects. Extensible Objects are extensible using the extensions property and MAY have optional properties.",
+      "properties": {
+        "extensions": {
+          "items": {
+            "$ref": "#/$defs/Extension"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, e.g. a UUID. This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system, or may refer to an 'id' for the shared concept in another system (e.g. a CURIE).",
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "description": "The schema class that is instantiated by the data object. Must be the name of a class from the VA schema.",
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["type"],
+      "title": "ExtensibleEntity",
+      "type": "object"
+    },
+    "Extension": {
+      "additionalProperties": false,
+      "description": "The Extension class provides VODs with a means to extend descriptions with other attributes unique to a content provider. These extensions are not expected to be natively understood under VRSATILE, but may be used for pre-negotiated exchange of message attributes when needed.",
+      "properties": {
+        "name": {
+          "description": "A name for the Extension",
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        },
+        "value": {
+          "description": "Any primitive or structured object",
+          "type": "integer"
+        }
+      },
+      "required": ["name", "value"],
+      "title": "Extension",
+      "type": "object"
+    },
+    "Gene": {
+      "additionalProperties": false,
+      "description": "A reference to a Gene as defined by an authority. For human genes, the use of `hgnc <https://registry.identifiers.org/registry/hgnc>`_ as the gene authority is RECOMMENDED.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "title": "Gene",
+      "type": "object"
+    },
+    "Genotype": {
+      "additionalProperties": false,
+      "description": "A quantified set of _in-trans_ :ref:`MolecularVariation` at a genomic locus.",
+      "properties": {
+        "count": {
+          "$ref": "#/$defs/Number",
+          "description": "The total number of copies of all :ref:`MolecularVariation` at this locus, MUST be greater than or equal to the sum of :ref:`GenotypeMember` copy counts. If greater than the total counts, this implies additional :ref:`MolecularVariation` that are expected to exist but are not explicitly indicated."
+        },
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "members": {
+          "description": "Each GenotypeMember in `members` describes a :ref:`MolecularVariation` and the count of that variation at the locus.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["members", "count"],
+      "title": "Genotype",
+      "type": "object"
+    },
+    "GenotypeMember": {
+      "additionalProperties": false,
+      "description": "A class for expressing the count of a specific :ref:`MolecularVariation` present _in-trans_ at a genomic locus represented by a :ref:`Genotype`.",
+      "properties": {
+        "count": {
+          "$ref": "#/$defs/Number",
+          "description": "The number of copies of the `variation` at a :ref:`Genotype` locus."
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        },
+        "variation": {
+          "$ref": "#/$defs/Allele",
+          "description": "A :ref:`MolecularVariation` at a :ref:`Genotype` locus."
+        }
+      },
+      "required": ["count", "variation"],
+      "title": "GenotypeMember",
+      "type": "object"
+    },
+    "Haplotype": {
+      "additionalProperties": false,
+      "description": "A set of non-overlapping :ref:`Allele` members that co-occur on the same molecule.",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "members": {
+          "description": "List of Alleles, or references to Alleles, that comprise this Haplotype.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["members"],
+      "title": "Haplotype",
+      "type": "object"
+    },
+    "IndefiniteRange": {
+      "additionalProperties": false,
+      "description": "A half-bounded range of numbers represented as a number bound and associated comparator. The bound operator is interpreted as follows: '>=' are all numbers greater than and including `value`, '<=' are all numbers less than and including `value`.",
+      "properties": {
+        "comparator": {
+          "description": "MUST be one of \"<=\" or \">=\", indicating which direction the range is indefinite",
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        },
+        "value": {
+          "description": "The bounded value; inclusive",
+          "type": "integer"
+        }
+      },
+      "required": ["type", "value", "comparator"],
+      "title": "IndefiniteRange",
+      "type": "object"
+    },
+    "LiteralSequenceExpression": {
+      "additionalProperties": false,
+      "description": "An explicit expression of a Sequence.",
+      "properties": {
+        "sequence": {
+          "description": "the literal :ref:`Sequence` expressed",
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["type", "sequence"],
+      "title": "LiteralSequenceExpression",
+      "type": "object"
+    },
+    "Number": {
+      "additionalProperties": false,
+      "description": "A simple integer value as a VRS class.",
+      "properties": {
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        },
+        "value": {
+          "description": "The value represented by Number",
+          "type": "integer"
+        }
+      },
+      "required": ["type", "value"],
+      "title": "Number",
+      "type": "object"
+    },
+    "Phenotype": {
+      "additionalProperties": false,
+      "description": "A reference to a Phenotype as defined by an authority. For human phenotypes, the use of `HPO <https://registry.identifiers.org/registry/hpo>`_ as the disease authority is RECOMMENDED.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "title": "Phenotype",
+      "type": "object"
+    },
+    "RecordMetadata": {
+      "additionalProperties": false,
+      "description": "A re-usable structure that encapsulates provenance metadata that applies to a specific concrete record of information as encoded in a particular system, as opposed to provenance of the abstract information content/knowledge the record represents.",
+      "properties": {
+        "extensions": {
+          "items": {
+            "$ref": "#/$defs/Extension"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, e.g. a UUID. This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system, or may refer to an 'id' for the shared concept in another system (e.g. a CURIE).",
+          "type": "string"
+        },
+        "is_version_of": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        }
+      },
+      "title": "RecordMetadata",
+      "type": "object"
+    },
+    "RelativeCopyNumber": {
+      "additionalProperties": false,
+      "description": "The relative copies of a :ref:`MolecularVariation`, :ref:`Feature`, :ref:`SequenceExpression`, or a :ref:`CURIE` reference against an unspecified baseline in a system (e.g. genome, cell, etc.).",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "location": {
+          "description": "The location within the system.",
+          "type": "string"
+        },
+        "relative_copy_class": {
+          "description": "MUST be one of \"EFO:0030070\", \"EFO:0030072\", \"EFO:0030071\", \"EFO:0030067\", \"EFO:0030069\", or \"EFO:0030068\".",
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["relative_copy_class", "location"],
+      "title": "RelativeCopyNumber",
+      "type": "object"
+    },
+    "RepeatedSequenceExpression": {
+      "additionalProperties": false,
+      "description": "An expression of a sequence comprised of a tandem repeating subsequence.",
+      "properties": {
+        "count": {
+          "$ref": "#/$defs/Number",
+          "description": "The count of repeated units, as an integer or inclusive range"
+        },
+        "seq_expr": {
+          "$ref": "#/$defs/LiteralSequenceExpression",
+          "description": "An expression of the repeating subsequence"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["seq_expr", "count"],
+      "title": "RepeatedSequenceExpression",
+      "type": "object"
+    },
+    "SequenceExpression": {
+      "additionalProperties": false,
+      "description": "An expression describing a :ref:`Sequence`.",
+      "title": "SequenceExpression",
+      "type": "object"
+    },
+    "SequenceLocation": {
+      "additionalProperties": false,
+      "description": "A :ref:`Location` defined by an interval on a referenced :ref:`Sequence`.",
+      "properties": {
+        "end": {
+          "description": "The end coordinate or range of the SequenceLocation. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range greater than the value of `start`.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "sequence_id": {
+          "description": "A VRS :ref:`Computed Identifier <computed-identifiers>` for the reference :ref:`Sequence`.",
+          "type": "string"
+        },
+        "start": {
+          "description": "The start coordinate or range of the SequenceLocation. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range less than the value of `end`.",
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["sequence_id", "start", "end"],
+      "title": "SequenceLocation",
+      "type": "object"
+    },
+    "SubstituteTherapeuticCollection": {
+      "additionalProperties": false,
+      "description": "A collection of therapeutics that are considered as valid alternative entities.",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "members": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["members"],
+      "title": "SubstituteTherapeuticCollection",
+      "type": "object"
+    },
+    "Text": {
+      "additionalProperties": false,
+      "description": "A free-text definition of variation.",
+      "properties": {
+        "definition": {
+          "description": "A textual representation of variation not representable by other subclasses of Variation.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["definition"],
+      "title": "Text",
+      "type": "object"
+    },
+    "Therapeutic": {
+      "additionalProperties": false,
+      "description": "A treatment, therapy, or drug.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "title": "Therapeutic",
+      "type": "object"
+    },
+    "TherapeuticCollection": {
+      "additionalProperties": false,
+      "description": "A collection of therapeutics.",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "members": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "description": "The schema class that is instantiated by the data object. Must be the name of a class from the VA schema.",
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["members", "type"],
+      "title": "TherapeuticCollection",
+      "type": "object"
+    },
+    "ValueEntity": {
+      "additionalProperties": false,
+      "description": "ValueEntity is the root class for classes that instantiate Value Objects. ValueEntity classes are not extensible and MUST NOT have optional properties.",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "type": {
+          "description": "The schema class that is instantiated by the data object. Must be the name of a class from the VA schema.",
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["type"],
+      "title": "ValueEntity",
+      "type": "object"
+    },
+    "VariationSet": {
+      "additionalProperties": false,
+      "description": "An unconstrained set of Variation members.",
+      "properties": {
+        "id": {
+          "description": "The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).",
+          "type": "string"
+        },
+        "members": {
+          "description": "List of Variation objects or identifiers. Attribute is required, but MAY be empty.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "type": {
+          "pattern": "Allele",
+          "type": "string"
+        }
+      },
+      "required": ["members"],
+      "title": "VariationSet",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/ga4gh/vrs/",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": true,
+  "metamodel_version": "1.7.0",
+  "title": "GA4GH-VRS",
+  "type": "object",
+  "version": null
+}

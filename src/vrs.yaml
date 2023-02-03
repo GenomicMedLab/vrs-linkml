@@ -186,7 +186,7 @@ classes:
       species_id:
         required: true
         range: CURIE
-        # default: "taxonomy:9606"
+        ifabsent: "taxonomy:9606"
         description: >-
           :ref:`CURIE` representing a species from the
           `NCBI species taxonomy <https://registry.identifiers.org/registry/taxonomy>`_.
