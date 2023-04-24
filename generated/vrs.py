@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime, date
 from enum import Enum
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Union, Literal
 from pydantic import BaseModel as BaseModel, Field
 from linkml_runtime.linkml_model import Decimal
 
@@ -49,7 +49,7 @@ class DerivedSequenceExpression(SequenceExpression):
     """
 
     type: Optional[str] = Field(None)
-    location: string = Field(
+    location: SequenceLocation = Field(
         None,
         description="""The location from which the approximate sequence is derived""",
     )
@@ -126,7 +126,7 @@ class IndefiniteRange(ConfiguredBaseModel):
     """
 
     type: str = Field(None)
-    value: int = Field(None, description="""The bounded value; inclusive""")
+    value: Number = Field(None, description="""The bounded value; inclusive""")
     comparator: str = Field(
         None,
         description="""MUST be one of \"<=\" or \">=\", indicating which direction the range is indefinite""",
@@ -345,7 +345,7 @@ class Genotype(SystemicVariation):
     """
 
     type: Optional[str] = Field(None)
-    members: List[string] = Field(
+    members: List[GenotypeMember] = Field(
         default_factory=list,
         description="""Each GenotypeMember in `members` describes a :ref:`MolecularVariation` and the count of that variation at the locus.""",
     )
@@ -381,7 +381,7 @@ class ChromosomeLocation(Location):
 
     type: Optional[str] = Field(None)
     species_id: string = Field(
-        None,
+        "taxonomy:9606",
         description=""":ref:`CURIE` representing a species from the `NCBI species taxonomy <https://registry.identifiers.org/registry/taxonomy>`_. Default: \"taxonomy:9606\" (human)""",
     )
     chr: str = Field(
@@ -412,11 +412,11 @@ class SequenceLocation(Location):
         None,
         description="""A VRS :ref:`Computed Identifier <computed-identifiers>` for the reference :ref:`Sequence`.""",
     )
-    start: string = Field(
+    start: Number = Field(
         None,
         description="""The start coordinate or range of the SequenceLocation. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range less than the value of `end`.""",
     )
-    end: string = Field(
+    end: Number = Field(
         None,
         description="""The end coordinate or range of the SequenceLocation. The minimum value of this coordinate or range is 0. MUST represent a coordinate or range greater than the value of `start`.""",
     )
@@ -462,7 +462,9 @@ class Extension(ConfiguredBaseModel):
 
     type: Optional[str] = Field(None)
     name: str = Field(None, description="""A name for the Extension""")
-    value: int = Field(None, description="""Any primitive or structured object""")
+    value: Optional[str] = Field(
+        None, description="""Any primitive or structured object"""
+    )
 
 
 class RecordMetadata(ExtensibleEntity):
@@ -528,7 +530,7 @@ class Condition(ValueEntity):
     A set of phenotype and/or disease concepts that constitute a condition.
     """
 
-    members: List[string] = Field(default_factory=list)
+    members: List[Disease] = Field(default_factory=list)
     id: Optional[string] = Field(
         None,
         description="""The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).""",
@@ -553,7 +555,7 @@ class TherapeuticCollection(ValueEntity):
     A collection of therapeutics.
     """
 
-    members: List[string] = Field(default_factory=list)
+    members: Optional[List[Therapeutic]] = Field(default_factory=list)
     id: Optional[string] = Field(
         None,
         description="""The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).""",
@@ -570,7 +572,7 @@ class CombinationTherapeuticCollection(TherapeuticCollection):
     """
 
     type: Optional[str] = Field(None)
-    members: List[string] = Field(default_factory=list)
+    members: Optional[List[Therapeutic]] = Field(default_factory=list)
     id: Optional[string] = Field(
         None,
         description="""The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).""",
@@ -583,7 +585,7 @@ class SubstituteTherapeuticCollection(TherapeuticCollection):
     """
 
     type: Optional[str] = Field(None)
-    members: List[string] = Field(default_factory=list)
+    members: Optional[List[Therapeutic]] = Field(default_factory=list)
     id: Optional[string] = Field(
         None,
         description="""The 'logical' identifier of the entity in the system of record, and MUST be represented as a CURIE. This 'id' is unique within a given system, but may also refer to an 'id' for the shared concept in another system (represented by namespace, accordingly).""",
