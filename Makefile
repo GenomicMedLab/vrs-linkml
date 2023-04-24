@@ -1,11 +1,22 @@
 .PHONY: pydantic
 
-pydantic: src/gks_core.yaml
-	gen-pydantic src/gks_core.yaml > generated/gks_core.py
-	black --quiet generated/gks_core.py
+pydantic: src/vrs.yaml
+ifeq ($(stacktrace),1)
+	gen-pydantic --stacktrace src/vrs.yaml > generated/vrs.py
+else
+	gen-pydantic src/vrs.yaml > generated/vrs.py
+endif
+	black --quiet generated/vrs.py
+
+
 
 .PHONY: jsonschema
 
-jsonschema: src/gks_core.yaml
-	gen-json-schema src/gks_core.yaml > generated/gks_core.json
-	prettier -w generated/gks_core.json
+jsonschema: src/vrs.yaml
+	gen-json-schema src/vrs.yaml > generated/vrs.json
+	prettier -w generated/vrs.json
+
+.PHONY: markdown
+
+markdown: src/vrs.yaml
+	gen-markdown --index-file docs/schema.md -d docs src/vrs.yaml
